@@ -48,17 +48,21 @@ def load_model():
 
 model, cv = load_model()
 
-# Initialize session state
-if 'input_text' not in st.session_state:
-    st.session_state.input_text = ""
+# Initialize Session State
+if 'text_input' not in st.session_state:
+    st.session_state.text_input = ""
+
+# Callback Function
+def set_example(text):
+    st.session_state.text_input = text
 
 # Text Area
 user_input = st.text_area(
     "Enter your email or message:",
-    value=st.session_state.input_text,
+    value=st.session_state.text_input,
     height=220,
     placeholder="Paste the email content here...",
-    key="text_area_key"
+    key="main_text_area"
 )
 
 # Quick Examples
@@ -67,17 +71,17 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     if st.button("Spam Example 1", use_container_width=True):
-        st.session_state.input_text = "Congratulations! You've won a $1000 Walmart gift card. Click here to claim now! Limited time offer."
+        set_example("Congratulations! You've won a $1000 Walmart gift card. Click here to claim now! Limited time offer.")
         st.rerun()
 
 with col2:
     if st.button("Spam Example 2", use_container_width=True):
-        st.session_state.input_text = "Your account has been suspended. Verify your details immediately or it will be permanently closed."
+        set_example("Your account has been suspended. Verify your details immediately or it will be permanently closed.")
         st.rerun()
 
 with col3:
     if st.button("Safe Example", use_container_width=True):
-        st.session_state.input_text = "Hey John, can we reschedule our meeting to 4 PM tomorrow? Let me know if that works."
+        set_example("Hey John, can we reschedule our meeting to 4 PM tomorrow? Let me know if that works.")
         st.rerun()
 
 # Predict Button
