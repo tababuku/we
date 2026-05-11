@@ -33,10 +33,6 @@ nltk.download('stopwords', quiet=True)
 st.markdown("<h1 class='main-header'>🛡️ Spam Email Detector</h1>", unsafe_allow_html=True)
 st.markdown("<p class='sub-header'>Advanced Email Spam Detection</p>", unsafe_allow_html=True)
 
-# Session State
-if 'message' not in st.session_state:
-    st.session_state.message = ""
-
 # Load Model
 @st.cache_resource
 def load_model():
@@ -47,40 +43,46 @@ def load_model():
             cv = pickle.load(f)
         return model, cv
     except Exception:
-        st.error("❌ Model files not found. Please upload `MultinomialNaiveBayes.pkl` and `vectorizer.pkl` to your repository.")
+        st.error("❌ Model files not found.")
         st.stop()
 
 model, cv = load_model()
 
-# Input
+# Input Area
+if 'message' not in st.session_state:
+    st.session_state.message = ""
+
 message = st.text_area(
     "Enter your email or message:",
     value=st.session_state.message,
     height=220,
     placeholder="Paste the email content here...",
-    key="message_input"          # ← This line was missing (Important)
+    key="message_input"
 )
 
-# Examples
+# ====================== EXAMPLE BUTTONS ======================
 st.markdown("**Quick Examples:**")
-c1, c2, c3 = st.columns(3)
-with c1:
+col1, col2, col3 = st.columns(3)
+
+with col1:
     if st.button("Spam Example 1", use_container_width=True):
-        st.session_state.message = "Congratulations! You've won a $1000 Walmart gift card. Click here to claim now!"
+        st.session_state.message = "Congratulations! You've won a $1000 Walmart gift card. Click here to claim now! Limited time offer."
         st.rerun()
-with c2:
+
+with col2:
     if st.button("Spam Example 2", use_container_width=True):
-        st.session_state.message = "Your account has been suspended. Verify your details immediately."
+        st.session_state.message = "Your account has been suspended. Verify your details immediately or it will be permanently closed."
         st.rerun()
-with c3:
+
+with col3:
     if st.button("Safe Example", use_container_width=True):
-        st.session_state.message = "Hey, are we still meeting tomorrow at 3 PM?"
+        st.session_state.message = "Hey John, can we reschedule our meeting to 4 PM tomorrow? Let me know if that works."
         st.rerun()
 
 # Predict Button
 if st.button("🔍 Check for Spam", type="primary", use_container_width=True):
     if not message.strip():
-        st.warning("Please enter a message.")
+        st.warning("⚠️ Please enter a message.")
     else:
         with st.spinner("Analyzing..."):
             ps = PorterStemmer()
@@ -102,6 +104,7 @@ if st.button("🔍 Check for Spam", type="primary", use_container_width=True):
             confidence = prob[1] if prediction == 1 else prob[0]
             st.progress(confidence)
 
+# Footer
 st.markdown("---")
 st.markdown("""
     <p style='text-align: center; color: #777; font-size: 0.95rem; margin-top: 10px;'>
