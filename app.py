@@ -48,50 +48,21 @@ def load_model():
 
 model, cv = load_model()
 
-# Initialize Session State
-if 'text_input' not in st.session_state:
-    st.session_state.text_input = ""
-
-# Callback Function
-def set_example(text):
-    st.session_state.text_input = text
-
-# Text Area
-user_input = st.text_area(
+# Input Area
+message = st.text_area(
     "Enter your email or message:",
-    value=st.session_state.text_input,
     height=220,
-    placeholder="Paste the email content here...",
-    key="main_text_area"
+    placeholder="Paste the email content here..."
 )
-
-# Quick Examples
-st.markdown("**Quick Examples:**")
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    if st.button("Spam Example 1", use_container_width=True):
-        set_example("Congratulations! You've won a $1000 Walmart gift card. Click here to claim now! Limited time offer.")
-        st.rerun()
-
-with col2:
-    if st.button("Spam Example 2", use_container_width=True):
-        set_example("Your account has been suspended. Verify your details immediately or it will be permanently closed.")
-        st.rerun()
-
-with col3:
-    if st.button("Safe Example", use_container_width=True):
-        set_example("Hey John, can we reschedule our meeting to 4 PM tomorrow? Let me know if that works.")
-        st.rerun()
 
 # Predict Button
 if st.button("🔍 Check for Spam", type="primary", use_container_width=True):
-    if not user_input.strip():
+    if not message.strip():
         st.warning("⚠️ Please enter a message.")
     else:
         with st.spinner("Analyzing..."):
             ps = PorterStemmer()
-            review = re.sub('[^a-zA-Z]', ' ', user_input).lower().split()
+            review = re.sub('[^a-zA-Z]', ' ', message).lower().split()
             review = [ps.stem(word) for word in review if word not in stopwords.words('english')]
             review = ' '.join(review)
             
